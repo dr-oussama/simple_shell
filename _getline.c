@@ -1,53 +1,66 @@
 #include "main.h"
 
-int _getline_helper(char **lnpt, size_t *n)
+/**
+ * _getline_helper - getline helper function
+ * @lineptr: string input
+ * @n: int input
+ * Return: int
+ */
+int _getline_helper(char **lineptr, size_t *n)
 {
-	if (*lnpt == NULL || *n == 0)
+	if (*lineptr == NULL || *n == 0)
 	{
 		*n = 128;
-		*lnpt = malloc(*n);
-		if (*lnpt == NULL)
+		*lineptr = malloc(*n);
+		if (*lineptr == NULL)
 			return (-1);
 	}
 	return (0);
 }
 
-ssize_t _getline(char **lnpt, size_t *n, FILE *strm)
+/**
+ * _getline - reads the input from FILE
+ * @lineptr: string input
+ * @n: int input
+ * @stream: FILE input
+ * Return: ssize_t
+ */
+ssize_t _getline(char **lineptr, size_t *n, FILE *stream)
 {
-	ssize_t bRead = 0;
-	size_t pstn = 0, newSize;
+	ssize_t bytesRead = 0;
+	size_t position = 0, newSize;
 	static char buf[READ_BUF_SIZE];
-	static size_t bSize, bufP;
+	static size_t bufSize, bufPos;
 	char *newBuffer;
 
-	if (lnpt == NULL || n == NULL || strm == NULL
-		|| _getline_helper(lnpt, n) == -1)
+	if (lineptr == NULL || n == NULL || stream == NULL
+		|| _getline_helper(lineptr, n) == -1)
 		return (-1);
 	while (1)
 	{
-		if (bufP >= bSize)
+		if (bufPos >= bufSize)
 		{
-			bRead = read(strm->_fileno, buf, READ_BUF_SIZE);
-			if (bRead <= 0 && pstn == 0)
+			bytesRead = read(stream->_fileno, buf, READ_BUF_SIZE);
+			if (bytesRead <= 0 && position == 0)
 				return (-1);
-			else if (bRead <= 0)
+			else if (bytesRead <= 0)
 				break;
-			bSize = bRead;
-			bufP = 0;
+			bufSize = bytesRead;
+			bufPos = 0;
 		}
-		if (pstn >= *n - 1)
+		if (position >= *n - 1)
 		{
 			newSize = *n * 2;
-			newBuffer = realloc(*lnpt, newSize);
+			newBuffer = realloc(*lineptr, newSize);
 			if (newBuffer == NULL)
 				return (-1);
-			*lnpt = newBuffer;
+			*lineptr = newBuffer;
 			*n = newSize;
 		}
-		(*lnpt)[pstn++] = buf[bufP++];
-		if ((*lnpt)[pstn - 1] == '\n')
+		(*lineptr)[position++] = buf[bufPos++];
+		if ((*lineptr)[position - 1] == '\n')
 			break;
 	}
-	(*lnpt)[pstn] = '\0';
-	return (pstn);
+	(*lineptr)[position] = '\0';
+	return (position);
 }

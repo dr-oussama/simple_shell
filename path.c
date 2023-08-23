@@ -1,5 +1,10 @@
 #include "main.h"
 
+/**
+ * _getenv - retrieves the value of an environment variable.
+ * @name: string input
+ * Return: value of an environment variable
+ */
 
 char *_getenv(char *name)
 {
